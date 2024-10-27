@@ -6,6 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
+    "start:watch": "npx electronmon --trace-warnings .",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
@@ -24,8 +25,8 @@
   },
   "keywords": [],
   "author": {
-    "name": "vuonglam2001",
-    "email": "lam.vuonganh@savyu.com"
+    "name": "lamzuong",
+    "email": "lamdavid821@gmail.com"
   },
   "license": "MIT",
   "dependencies": {
