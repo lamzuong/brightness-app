@@ -10,8 +10,9 @@ if (require("electron-squirrel-startup")) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 500,
+    width: 800,
+    height: 200,
+    icon: path.join(__dirname, "assets/icons/brightness-icon.png"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
