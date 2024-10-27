@@ -1,17 +1,24 @@
 document.addEventListener("DOMContentLoaded", function () {
   const progressElement = document.getElementById("myProgress");
   const barElement = progressElement.querySelector(".bar");
+  const labelElement = document.querySelector(".label");
+
+  function getLabelProgress(percent) {
+    return `👑 Lâm Vương - Current brightness ${percent}%`;
+  }
 
   // Initialize the progress bar
   function initializeProgress() {
     const percent = progressElement.getAttribute("data-percent");
     barElement.style.width = `${percent}%`;
+    labelElement.textContent = getLabelProgress(percent);
   }
 
   // Function to set the progress percentage
   function setProgress(percent) {
     progressElement.setAttribute("data-percent", percent);
     barElement.style.width = `${percent}%`;
+    labelElement.textContent = getLabelProgress(percent);
 
     // Min brightness 40, max brightness 100
     const minBrightness = 40;
@@ -19,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
       ((percent / 100) * (100 - minBrightness) + minBrightness) / 100;
 
     if (brightnessValue >= 0) {
-      console.log(`brightnessValue: ${brightnessValue}`);
       window.brightnessAPI
         .setBrightness(brightnessValue)
         .then((result) => console.log(result))

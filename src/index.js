@@ -10,7 +10,7 @@ if (require("electron-squirrel-startup")) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
+    width: 550,
     height: 200,
     icon: path.join(__dirname, "assets/icons/brightness-icon.png"),
     webPreferences: {
@@ -25,23 +25,32 @@ const createWindow = () => {
   mainWindow.loadFile(path.join(__dirname, "index.html"));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 };
 
 ipcMain.handle("set-brightness", async (event, brightnessValue) => {
   return new Promise((resolve, reject) => {
-    exec(
-      `xrandr --output eDP-1 --brightness ${brightnessValue}`,
-      (error, stdout, stderr) => {
-        if (error) {
-          reject(`Error executing xrandr: ${error.message}`);
-        } else if (stderr) {
-          reject(`stderr: ${stderr}`);
-        } else {
-          resolve(`Brightness set to ${brightnessValue}`);
-        }
+    exec(`xrandr -q | grep " connected"`, (error, stdout, stderr) => {
+      if (stdout) {
+        const arrayStdout = stdout.split(" ");
+        const indexPrimary = arrayStdout.indexOf("primary");
+        const device = arrayStdout[indexPrimary - 2]; // eDP-1
+        const brightness = brightnessValue.toFixed(2);
+
+        exec(
+          `xrandr --output ${device} --brightness ${brightness}`,
+          (error, stdout, stderr) => {
+            if (error) {
+              reject(`Error executing xrandr: ${error.message}`);
+            } else if (stderr) {
+              reject(`stderr: ${stderr}`);
+            } else {
+              resolve(`Brightness set to ${brightness}`);
+            }
+          }
+        );
       }
-    );
+    });
   });
 });
 
