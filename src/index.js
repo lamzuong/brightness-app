@@ -1,4 +1,5 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
+const { exec } = require("child_process");
 const path = require("node:path");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -9,10 +10,13 @@ if (require("electron-squirrel-startup")) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 500,
-    height: 200,
+    width: 1000,
+    height: 500,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      enableRemoteModule: true,
+      nodeIntegration: false,
     },
   });
 
@@ -22,6 +26,23 @@ const createWindow = () => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 };
+
+ipcMain.handle("set-brightness", async (event, brightnessValue) => {
+  return new Promise((resolve, reject) => {
+    exec(
+      `xrandr --output eDP-1 --brightness ${brightnessValue}`,
+      (error, stdout, stderr) => {
+        if (error) {
+          reject(`Error executing xrandr: ${error.message}`);
+        } else if (stderr) {
+          reject(`stderr: ${stderr}`);
+        } else {
+          resolve(`Brightness set to ${brightnessValue}`);
+        }
+      }
+    );
+  });
+});
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
